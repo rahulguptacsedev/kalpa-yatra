@@ -7,20 +7,29 @@ class TenantResolver {
   /// 2. Subdomains: {tenantId}.kalpa-yatra.com (Future proofing)
   static String resolve() {
     final uri = Uri.base;
+    final host = uri.host;
 
-    // 1. Check path segments first (Easy way)
-    // Example: /p/client_a/dashboard -> segments are ['p', 'client_a', 'dashboard']
+    // 1. Check for professional Subdomains/Custom Domains first
+    // Example: rishikesh.kalpa-yatra.com or www.kashiexperience.com
+    final hostParts = host.split('.');
+
+    // Ignore common technical subdomains
+    if (hostParts.length >= 2) {
+      final firstPart = hostParts[0].toLowerCase();
+      if (firstPart != 'www' &&
+          firstPart != 'localhost' &&
+          firstPart != 'kalpa-yatra' &&
+          firstPart != 'kalpa-yatra-web-app') {
+        // Firebase default domain base
+        return firstPart;
+      }
+    }
+
+    // 2. Check path segments (Legacy/Testing fallback)
+    // Example: /p/client_a
     final pathSegments = uri.pathSegments;
     if (pathSegments.length >= 2 && pathSegments[0] == 'p') {
       return pathSegments[1];
-    }
-
-    // 2. Check subdomains (For professional SaaS scaling)
-    final hostParts = uri.host.split('.');
-    if (hostParts.length >= 3 &&
-        hostParts[0] != 'www' &&
-        hostParts[0] != 'kalpa-yatra') {
-      return hostParts[0];
     }
 
     // Default fallback
