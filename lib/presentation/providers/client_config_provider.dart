@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/client_config.dart';
+import 'tenant_provider.dart';
 
 class ClientConfigNotifier extends StateNotifier<ClientConfig> {
-  ClientConfigNotifier() : super(ClientConfig.defaultConfig) {
-    // Auto-load the default tenant config so the public portal
-    // shows correct branding without requiring admin login
-    loadFromFirestore('varanasi_default');
+  ClientConfigNotifier(String tenantId) : super(ClientConfig.defaultConfig) {
+    // Auto-load the tenant config resolved from the URL
+    loadFromFirestore(tenantId);
   }
 
   Future<void> loadFromFirestore(String tenantId) async {
@@ -53,5 +53,6 @@ class ClientConfigNotifier extends StateNotifier<ClientConfig> {
 
 final clientConfigProvider =
     StateNotifierProvider<ClientConfigNotifier, ClientConfig>((ref) {
-      return ClientConfigNotifier();
+      final tenantId = ref.watch(tenantIdProvider);
+      return ClientConfigNotifier(tenantId);
     });
