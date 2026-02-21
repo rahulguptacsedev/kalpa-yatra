@@ -57,11 +57,11 @@ class HomePage extends ConsumerWidget {
           children: [
             // ── Hero Section ─────────────────────────────
             HeroSection(
-              title: 'Discover the Soul\nof Varanasi',
+              title: 'Discover the Soul\nof Varanasi/Kashi/Banaras',
               subtitle:
                   'Experience sacred rituals, ancient temples, and timeless traditions\nin India\'s spiritual capital',
               backgroundImageUrl:
-                  'https://images.unsplash.com/photo-1590801646063-44754751f7fb?q=80&w=1400',
+                  'https://images.unsplash.com/photo-1561361058-c24cecae35ca?w=800&q=80',
             ),
 
             // ── Services Section ─────────────────────────

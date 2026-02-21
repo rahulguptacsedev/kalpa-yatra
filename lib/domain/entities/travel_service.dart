@@ -41,4 +41,26 @@ class TravelService {
       iconName: map['iconName'] ?? 'explore',
     );
   }
+
+  TravelService copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? imageUrl,
+    double? price,
+    String? duration,
+    List<String>? highlights,
+    String? iconName,
+  }) {
+    return TravelService(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      price: price ?? this.price,
+      duration: duration ?? this.duration,
+      highlights: highlights ?? this.highlights,
+      iconName: iconName ?? this.iconName,
+    );
+  }
 }

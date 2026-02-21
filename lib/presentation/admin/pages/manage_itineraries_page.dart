@@ -71,39 +71,77 @@ class _ManageItinerariesPageState extends ConsumerState<ManageItinerariesPage> {
   void _addStep() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         final timeCtrl = TextEditingController();
         final titleCtrl = TextEditingController();
         final descCtrl = TextEditingController();
+        final primaryColor = ref.read(clientConfigProvider).primaryColor;
+
         return AlertDialog(
-          title: const Text('Add Step'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
             children: [
-              TextField(
-                controller: timeCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Time (e.g., 5:00 AM)',
-                ),
-              ),
-              TextField(
-                controller: titleCtrl,
-                decoration: const InputDecoration(labelText: 'Title'),
-              ),
-              TextField(
-                controller: descCtrl,
-                decoration: const InputDecoration(labelText: 'Description'),
-                maxLines: 2,
+              Icon(Icons.add_location_alt_rounded, color: primaryColor),
+              const SizedBox(width: 12),
+              Text(
+                'Add Itinerary Step',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
               ),
             ],
+          ),
+          content: Container(
+            width: 500, // Make it wider
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                TextField(
+                  controller: timeCtrl,
+                  style: GoogleFonts.poppins(fontSize: 14),
+                  decoration: _stepInputDecoration(
+                    'Time (e.g., 5:00 AM)',
+                    Icons.access_time_rounded,
+                    primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: titleCtrl,
+                  style: GoogleFonts.poppins(fontSize: 14),
+                  decoration: _stepInputDecoration(
+                    'Stage Title',
+                    Icons.title_rounded,
+                    primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: descCtrl,
+                  style: GoogleFonts.poppins(fontSize: 14),
+                  maxLines: 3,
+                  decoration: _stepInputDecoration(
+                    'Description',
+                    Icons.description_rounded,
+                    primaryColor,
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: GoogleFonts.poppins(color: Colors.grey.shade600),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
+                if (titleCtrl.text.isEmpty) return;
                 setState(() {
                   _steps.add(
                     ItineraryStep(
@@ -116,11 +154,47 @@ class _ManageItinerariesPageState extends ConsumerState<ManageItinerariesPage> {
                 });
                 Navigator.pop(context);
               },
-              child: const Text('Add'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: Text(
+                'Add Step',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         );
       },
+    );
+  }
+
+  InputDecoration _stepInputDecoration(
+    String label,
+    IconData icon,
+    Color primaryColor,
+  ) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: GoogleFonts.poppins(fontSize: 14),
+      prefixIcon: Icon(icon, color: primaryColor, size: 20),
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: primaryColor, width: 2),
+      ),
     );
   }
 

@@ -19,8 +19,10 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
   final _imageUrlController = TextEditingController();
   final _priceController = TextEditingController();
   final _durationController = TextEditingController();
+  final _highlightsController = TextEditingController();
   String _selectedCategory = 'Adventure';
   bool _showForm = false;
+  String? _editingServiceId;
 
   static const _categories = [
     'Adventure',
@@ -45,6 +47,7 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
     _imageUrlController.dispose();
     _priceController.dispose();
     _durationController.dispose();
+    _highlightsController.dispose();
     super.dispose();
   }
 
@@ -55,14 +58,40 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
     _imageUrlController.clear();
     _priceController.clear();
     _durationController.clear();
+    _highlightsController.clear();
     _selectedCategory = 'Adventure';
+    _editingServiceId = null;
+  }
+
+  void _initEditService(TravelService service) {
+    _titleController.text = service.title;
+    _descriptionController.text = service.description;
+    _imageUrlController.text = service.imageUrl;
+    _priceController.text = service.price.toStringAsFixed(0);
+    _durationController.text = service.duration;
+    _highlightsController.text = service.highlights.join(', ');
+    _selectedCategory = _categoryIcons.entries
+        .firstWhere(
+          (e) => e.value == service.iconName,
+          orElse: () => _categoryIcons.entries.first,
+        )
+        .key;
+    _editingServiceId = service.id;
+    _showForm = true;
+    setState(() {});
   }
 
   void _submitService() {
     if (!_formKey.currentState!.validate()) return;
 
+    final highlights = _highlightsController.text
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
     final service = TravelService(
-      id: 'svc_${DateTime.now().millisecondsSinceEpoch}',
+      id: _editingServiceId ?? 'svc_${DateTime.now().millisecondsSinceEpoch}',
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       imageUrl: _imageUrlController.text.trim().isNotEmpty
@@ -70,15 +99,21 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
           : 'https://images.unsplash.com/photo-1561361058-c24cecae35ca?w=800&q=80',
       price: double.tryParse(_priceController.text) ?? 0,
       duration: _durationController.text.trim(),
-      highlights: [],
+      highlights: highlights,
       iconName: _categoryIcons[_selectedCategory] ?? 'explore',
     );
 
-    ref.read(serviceListViewModelProvider.notifier).addService(service);
+    if (_editingServiceId != null) {
+      ref.read(serviceListViewModelProvider.notifier).updateService(service);
+    } else {
+      ref.read(serviceListViewModelProvider.notifier).addService(service);
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('✅ "${service.title}" added successfully'),
+        content: Text(
+          '✅ "${service.title}" ${_editingServiceId != null ? 'updated' : 'added'} successfully',
+        ),
         backgroundColor: Colors.green.shade700,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -127,7 +162,14 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: () => setState(() => _showForm = !_showForm),
+                onPressed: () {
+                  if (_showForm) {
+                    _resetForm();
+                    setState(() => _showForm = false);
+                  } else {
+                    setState(() => _showForm = true);
+                  }
+                },
                 icon: Icon(_showForm ? Icons.close : Icons.add_rounded),
                 label: Text(_showForm ? 'Cancel' : 'Add Service'),
                 style: ElevatedButton.styleFrom(
@@ -248,65 +290,78 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
                 color: Colors.grey.shade500,
               ),
             ),
-            trailing: IconButton(
-              icon: Icon(
-                Icons.delete_outline_rounded,
-                color: Colors.red.shade400,
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    title: Text(
-                      'Delete Service',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                    ),
-                    content: Text(
-                      'Are you sure you want to delete "${service.title}"?',
-                      style: GoogleFonts.poppins(fontSize: 14),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: Text(
-                          'Cancel',
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit_outlined, color: Colors.blue),
+                  onPressed: () => _initEditService(service),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.red.shade400,
+                  ),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: Text(
+                          'Delete Service',
                           style: GoogleFonts.poppins(
-                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref
-                              .read(serviceListViewModelProvider.notifier)
-                              .deleteService(service.id);
-                          Navigator.pop(ctx);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('🗑️ "${service.title}" deleted'),
-                              behavior: SnackBarBehavior.floating,
+                        content: Text(
+                          'Are you sure you want to delete "${service.title}"?',
+                          style: GoogleFonts.poppins(fontSize: 14),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(
+                              'Cancel',
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              ref
+                                  .read(serviceListViewModelProvider.notifier)
+                                  .deleteService(service.id);
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '🗑️ "${service.title}" deleted',
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red.shade600,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            child: Text('Delete', style: GoogleFonts.poppins()),
                           ),
-                        ),
-                        child: Text('Delete', style: GoogleFonts.poppins()),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
           );
         },
@@ -328,7 +383,7 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Add New Service',
+              _editingServiceId != null ? 'Edit Service' : 'Add New Service',
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -438,6 +493,21 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
                 return null;
               },
             ),
+            const SizedBox(height: 14),
+
+            // Highlights
+            TextFormField(
+              controller: _highlightsController,
+              maxLines: 2,
+              style: GoogleFonts.poppins(fontSize: 14),
+              decoration: _inputDecoration(
+                'Highlights (comma separated)',
+                Icons.auto_awesome_rounded,
+                primaryColor,
+                hintText:
+                    'e.g. Sunrise boat ride, Local guide, Photography spots',
+              ),
+            ),
             const SizedBox(height: 20),
 
             // Submit
@@ -446,9 +516,13 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
               height: 48,
               child: ElevatedButton.icon(
                 onPressed: _submitService,
-                icon: const Icon(Icons.add_rounded),
+                icon: Icon(
+                  _editingServiceId != null
+                      ? Icons.save_rounded
+                      : Icons.add_rounded,
+                ),
                 label: Text(
-                  'Add Service',
+                  _editingServiceId != null ? 'Update Service' : 'Add Service',
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -486,10 +560,13 @@ class _ManageServicesPageState extends ConsumerState<ManageServicesPage> {
   InputDecoration _inputDecoration(
     String label,
     IconData icon,
-    Color primaryColor,
-  ) {
+    Color primaryColor, {
+    String? hintText,
+  }) {
     return InputDecoration(
       labelText: label,
+      hintText: hintText,
+      hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey.shade400),
       labelStyle: GoogleFonts.poppins(fontSize: 14),
       prefixIcon: Icon(icon, color: primaryColor, size: 20),
       filled: true,
