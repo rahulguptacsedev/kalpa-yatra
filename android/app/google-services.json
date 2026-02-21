@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1008176174259",
+    "project_id": "kalpa-yatra",
+    "storage_bucket": "kalpa-yatra.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008176174259:android:d1faf6a7b216f08a00ccc6",
+        "android_client_info": {
+          "package_name": "com.kalpa.yatra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1008176174259-82iv96058g2n368lohua59iqj4kdh2sh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1MA38I9uUX8hS_RXhfnhEcAXDVo1pi_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1008176174259-82iv96058g2n368lohua59iqj4kdh2sh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1008176174259-01ngmss5tpvsmbvg42e3f10tehjdicmm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kalpa.yatra"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

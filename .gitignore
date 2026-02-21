@@ -47,8 +47,8 @@ app.*.map.json
 # Firebase secrets
 service-account-key.json
 scripts/service-account-key.json
-google-services.json
-firebase_options.dart
+# google-services.json and firebase_options.dart are included for CI/CD builds
+
 
 # Node dependencies
 scripts/node_modules/
