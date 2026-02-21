@@ -61,7 +61,7 @@ class HomePage extends ConsumerWidget {
               subtitle:
                   'Experience sacred rituals, ancient temples, and timeless traditions\nin India\'s spiritual capital',
               backgroundImageUrl:
-                  'https://images.unsplash.com/photo-1627894006066-b45edd3e3fd0?w=1400&q=80',
+                  'https://images.unsplash.com/photo-1561361058-c24cecae35ca?w=1400&q=80',
             ),
 
             // ── Services Section ─────────────────────────
