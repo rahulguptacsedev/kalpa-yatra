@@ -15,8 +15,8 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'admin@kalpayatra.com');
-  final _passwordController = TextEditingController(text: 'kashi123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
@@ -279,47 +279,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                 const SizedBox(height: 24),
 
-                // Demo credentials hint
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue.shade100),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: Colors.blue.shade700,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Demo Credentials',
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blue.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Varanasi: admin@kalpayatra.com / kashi123\n'
-                        'Rishikesh: admin@rishikesh.com / rishi123',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.blue.shade600,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
