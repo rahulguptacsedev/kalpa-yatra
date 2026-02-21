@@ -1,0 +1,37 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "kalpa-yatra",
+                    "appId": "1:1008176174259:android:d1faf6a7b216f08a00ccc6",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "kalpa-yatra",
+                    "configurations": {
+                        "android": "1:1008176174259:android:d1faf6a7b216f08a00ccc6",
+                        "ios": "1:1008176174259:ios:c0cbf13e4824e7ff00ccc6",
+                        "web": "1:1008176174259:web:2fe87d150152b13100ccc6"
+                    }
+                }
+            }
+        }
+    },
+    "hosting": {
+        "public": "build/web",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ],
+        "rewrites": [
+            {
+                "source": "**",
+                "destination": "/index.html"
+            }
+        ]
+    }
+}
