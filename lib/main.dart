@@ -27,11 +27,25 @@ class TravelApp extends ConsumerWidget {
       title: config.clientName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.buildTheme(config),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/admin/login': (context) => const LoginPage(),
-        '/admin': (context) => const AdminShell(),
+      onGenerateRoute: (settings) {
+        // Any path starting with /p/ (e.g. /p/client_a) should load the home page.
+        // The TenantResolver will handle the actual data switching.
+        final path = settings.name ?? '/';
+        if (path.startsWith('/p/')) {
+          return MaterialPageRoute(builder: (_) => const HomePage());
+        }
+
+        // Conventional routes
+        switch (path) {
+          case '/':
+            return MaterialPageRoute(builder: (_) => const HomePage());
+          case '/admin/login':
+            return MaterialPageRoute(builder: (_) => const LoginPage());
+          case '/admin':
+            return MaterialPageRoute(builder: (_) => const AdminShell());
+          default:
+            return MaterialPageRoute(builder: (_) => const HomePage());
+        }
       },
     );
   }
